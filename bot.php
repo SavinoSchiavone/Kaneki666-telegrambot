@@ -1,15 +1,15 @@
 <?php
 
 //creator_id
-$creator_id = "131693439";
+$creator_id = "YOUR_TELEGRAM_ID";
 
 require "base.php";
 
 //connect to database
-mysql_select_db("my_micheletelegram");
+mysql_select_db("YOUR_DATABASE_NAME");
 
 //bot object
-$telegram = new Telegram("307878714:AAF3b87T3bvw3HoOw80sLP8-gCZkqBBWkuM");
+$telegram = new Telegram("INSER_APIKEY_HERE");
 
 //message
 //$message = $telegram->getMessage();
@@ -19,7 +19,7 @@ require_once "minecraft.php";
 $minecraft = new Minecraft();
 
 //tables
-$table = "Kaneki666Contact";
+$table = "DATABSE_TABLE";
 
 //database variables
 $select = mysql_query("select * from $table where user_id = '$user_id'");
