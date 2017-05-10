@@ -1,15 +1,15 @@
 <?php
 
 //creator_id
-$creator_id = "YOUR_TELEGRAM_ID";
+$creator_id = "131693439";
 
 require "base.php";
 
 //connect to database
-mysql_select_db("YOUR_DATABASE_NAME");
+mysql_select_db("my_micheletelegram");
 
 //bot object
-$telegram = new Telegram("YOUR_BOT_API_KEY");
+$telegram = new Telegram("354965050:AAHbAC_UaiUPrhxEqzblbJD1oWPhT0RAHxc");
 
 //minecraft object
 require_once "minecraft.php";
@@ -20,7 +20,7 @@ require_once "phpfunc.php";
 $php = new phpfunc();
 
 //tables
-$table = "YOUR_DATABASE_TABLE_NAME";
+$table = "Kaneki666Contact";
 
 //database variables
 $select = mysql_query("select * from $table where user_id = '$user_id'");
@@ -31,7 +31,6 @@ $state = $select_result["state"];
 $commands = ["/start", "Cancel", "Contact me", "Minecraft Info", "/premium"];
 //start_command array
 $prefix_command = ["!", "/", ".", "#"];
-$start_command = ["!startg", ".startg", "/startg", "#startg"];
 $start_command_ex = ["qualcosa", "qualcosa2"];
 
 //start message
@@ -49,6 +48,7 @@ if ($telegram->getMessage() == "/start") {
     "resize_keyboard" => true
 	];
 	$text = "Hi! Welcome to my main bot. 
+	Bot made by @Kaneki666. You can find source code <a href=\"https://github.com/savinoSchiavone/Kaneki666-telegrambot\">here</a>
 	Select what you want to do: ";
 	$telegram->sendMessage($text, $menu);
 	mysql_query("update $table set state = '' where user_id = '$user_id'");
@@ -156,13 +156,13 @@ $message = str_replace(substr($telegram->getMessage(), 0, 1), "", $telegram->get
 $ex = explode(" ", $message);
 
 
-
+//start
 if ($ex[0] == "startg") {
-	if ($data == null) {
+	if ($ex[1] == null) {
 		if ($chat_type == "private") {
 			$text = "Welcome to this new GroupManagerBot.
 			Bot made by @Kaneki666
-			You can find the bot source code at github.com/SavinoSchiavone
+			You can find the bot source code <a href=\"https://github.com/savinoSchiavone/Kaneki666-telegrambot\">here</a>
 			/help for a command list";
 			$button1 = [
 				"text" => "My github :D",
@@ -182,7 +182,7 @@ if ($ex[0] == "startg") {
 			$telegram->sendMessage("<b>Contact me in private chat</b>");
 				$text = "Welcome to this new GroupManagerBot.
 			Bot made by @Kaneki666
-			You can find the bot source code at github.com/SavinoSchiavone
+			You can find the bot source code <a href=\"https://github.com/savinoSchiavone/Kaneki666-telegrambot\">here</a>
 			/help for a commands list";
 			$button1 = [
 				"text" => "My github :D",
@@ -199,45 +199,143 @@ if ($ex[0] == "startg") {
 			$menu = ["inline_keyboard" => $structure];
 			$telegram->sendMessage($text, $menu, $user_id);
 		}
-	} else if (in_array($data, $start_command_ex)) {
-		if ($data == "qualcosa") {
+	} else if (in_array($ex[1], $start_command_ex)) {
+		if ($ex[1] == "qualcosa") {
 			$telegram->sendMessage("qualcosa");
-		} else if ($data == "qualcosa2") {
+		} else if ($ex[1] == "qualcosa2") {
 			$telegram->sendMessage("qualcosa2");
 		}
-	} elseif (!in_array($data, $start_command_ex) && $data != null) {
+	} elseif (!in_array($ex[1], $start_command_ex) && $ex[1] != null) {
 		$telegram->sendMessage("No riconosciuto");
 	}
 } 
 
 
-/*
-if () {
-	$text = "Commands list
+//help
+if ($ex[0] == "help") {
+	if ($chat_type == "private") {
+		if ($ex[1] == null) {
+			$text = "Commands list
 
-Admins's commands:
-	/ban - Ban an user
-	/unban - Unban an user
-	/kick - Kick an user
-	/info - Get user info
-	/settings - Open setting menu
+	Admins's commands:
+		/ban - Ban an user [reply]
+		/unban - Unban an user [reply]
+		/kick - Kick an user [reply]
+		/info - Get user info [reply]
+		/del - Delete message [reply]
 
-Users's commands:
-	/info - Get your info
-	/link - Get group link if setted
-	@admin - Alert to all admins
+	Users's commands:
+		/info - Get your info
+		@admin - Alert to all admins
 
-More commands are coming.
-Use /help {command} to see help page for a command
-You can use all /commands also with .command, !command or #command";
-	$telegram->sendMessage($text);
+	More commands are coming.
+	Use /help {command} to see help page for a command
+	You can use all /command also with .command, !command or #command";
+		$telegram->sendMessage($text);
+		} else if (in_array($ex[1], $help_command_ex)) {
+			if ($ex[1] == "qualcosa") {
+				$telegram->sendMessage("qualcosa");
+			} else if ($ex[1] == "qualcosa2") {
+				$telegram->sendMessage("qualcosa2");
+			}
+		} elseif (!in_array($ex[1], $help_command_ex) && $ex[1] != null) {
+			$telegram->sendMessage("No riconosciuto");
+		}
+	} else if ($chat_type == "group" or $chat_type == "supergroup") {
+		$telegram->sendMessage("<b>Contact me in private chat</b>");
+		$text = "Commands list
+
+	Admins's commands:
+		/ban - Ban an user [reply]
+		/unban - Unban an user [reply]
+		/kick - Kick an user [reply]
+		/info - Get user info [reply]
+		/del - Delete message [reply]
+
+	Users's commands:
+		/info - Get your info
+		@admin - Alert to all admins
+
+	More commands are coming.
+	Use /help {command} to see help page for a command
+	You can use all /command also with .command, !command or #command";
+		$telegram->sendMessage($text, null, $user_id);
+	}
 }
 
+//ban an user by reply
+if ($ex[0] == "ban") {
+	if ($chat_type == "group" or $chat_type == "supergroup") {
+		if ($telegram->isAdmin($chat_id, $user_id) == true) {
+			if ($ex[1] == null) {
+				if (isset($reply_user_id)) {
+					$telegram->kickChatMember($chat_id, $reply_user_id);
+					if ($telegram->isAdmin($chat_id, $reply_user_id) == true) {
+						$telegram->sendMessage("You can't ban user ".$reply_user_id, null, $user_id);
+					} else {
+						$telegram->sendMessage("User: ".$reply_user_id." banned.");
+					}
+				} else {
+					$telegram->sendMessage("Invalid user", null, $user_id);
+				}
+			}
+		}
+	}
+}
+
+
+//unban an user by reply
+if ($ex[0] == "unban") {
+	if ($chat_type == "group" or $chat_type == "supergroup") {
+		if ($telegram->isAdmin($chat_id, $user_id) == true) {
+			if ($ex[1] == null) {
+				if (isset($reply_user_id)) {
+					$telegram->unbanChatMember($chat_id, $reply_user_id);
+					$telegram->sendMessage("User: ".$reply_user_id." unbanned.");
+				} else {
+					$telegram->sendMessage("Invalid user", null, $user_id);
+				}
+			}
+		}
+	}
+}
+
+
+//deleteMessage
+/*
+*IF THE COMMAND ISN'T WORKING CHECK IF YOUR BOT
+*SUPPORT THE METHOD deleteMessage WITH THE LINK:
+*api.telegram.org/botYOUR_BOT_TOKEN/deleteMessage
+*IF THE RESPONSE IS "METHOD NOT FOUND" YOUR BOT ISN'T
+*SUPPORTING THE METHOD AND YOU NEED TO DO ANOTHER ONE
+*OR SIMPLY WAIT FOR THE OFFICIAL ANNOUNCE OF THE METHOD
 */
+if ($ex[0] == "del") {
+	if ($chat_type == "group" or $chat_type == "supergroup") {
+		if ($telegram->isAdmin($chat_id, $user_id) == true) {
+			if (isset($reply_message_id)) {
+				$telegram->deleteMessage($chat_id, $reply_message_id);
+			}
+		}
+	}
+}
+
+
+
+//get chat_id
+if ($ex[0] == "chatid") {
+	$telegram->sendMessage($chat_id);
+}
+
+
+
+
 
 
 
 }//prefix control end
+
+
 
 
 ?>
