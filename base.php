@@ -7,6 +7,7 @@ $updates = json_decode($input, true);
 
 //main variables
 $message = $updates['message']['text'];
+$message_id = $updates['message']['message_id'];
 $user_id = $updates['message']['from']['id'];
 $chat_id = $updates['message']['chat']['id'];
 $first_name = $updates['message']['from']['first_name'];
@@ -15,6 +16,7 @@ $username = $updates['message']['from']['username'];
 $chat_username = $updates['message']['chat']['username'];
 $chat_type = $updates['message']['chat']['type'];
 $reply_message = $updates["message"]["reply_to_message"]["text"];
+$reply_message_id = $updates ['message']['reply_to_message']['message_id'];
 $reply_user_id = $updates["message"]["reply_to_message"]["from"]["id"];
 //callback (inline keyboards) variables
 if($updates['callback_query'])
@@ -87,34 +89,7 @@ class Telegram{
 			"disable_web_page_preview" => true
 		];
 		$r = new HttpRequest("get", $this->api."sendMessage", $args);
-		$rr = $r->getResponse();
-		$ar = json_decode($rr, true);
-		$error = $ar["ok"];
-		if ($error == false) {
-			$telegram->sendMessage($chat_id, "An error occurred.
-				<b>Error code:</b>
-
-				$rr
-
-				Please contact @Kaneki666");
-			$telegram->sendMessage($creator_id, "An error occurred:
-
-				ChatID: $chat_id
-				UserID: $user_id
-				Username: $username
-				Name: $first_name
-				Message: $message
-
-				<b>Error code:</b>
-
-				$rr");
-		}
-		$ok = $ar["ok"]; //false
-		$e403 = $ar["error_code"];
-		if ($e403 == "403") {
-			// bot disabled by user
-			$telegram->sendMessage($creator_id, "Probably the user blocked the bot.");
-		}
+		return json_encode($r);
 	}
 
 	//answerCallbackQuery (an alert text)
@@ -188,6 +163,63 @@ class Telegram{
 	{
 		$r = new HttpRequest("get", $this->api."answerInlineQuery", $args);
 	}
+	
+
+	//isAdmin
+	public function isAdmin($chat_id, $user_id)
+	{
+		$args = [
+			"chat_id" => $chat_id
+		];
+		$r = new HttpRequest("get", $this->api."getChatAdministrators", $args);
+		$rr = $r->getResponse();
+		//$this->sendMessage($rr, null, $chat_id);
+		$admins = json_decode($rr, true);
+		foreach ($admins["result"] as $admin) {
+			if ($admin["user"]["id"] == $user_id) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	//ban
+	public function kickChatMember($chat_id, $user_id)
+	{
+		$args = [
+			"chat_id" => $chat_id,
+			"user_id" => $user_id
+		];
+		$r = new HttpRequest("get", $this->api."kickChatMember", $args);
+	}
+
+	//unban
+	public function unbanChatMember($chat_id, $user_id)
+	{
+		$args = [
+			"chat_id" => $chat_id,
+			"user_id" => $user_id
+		];
+		$r = new HttpRequest("get", $this->api."unbanChatMember", $args);
+	}
+
+	//deleteMessage
+	public function deleteMessage($chat_id, $reply_message_id)
+	{
+		global $message_id;
+		$args = [
+			"chat_id" => $chat_id,
+			"message_id" => $reply_message_id
+		];
+		$r = new HttpRequest("get", $this->api."deleteMessage", $args);
+		$args = [
+			"chat_id" => $chat_id,
+			"message_id" => $message_id
+		];
+		$r = new HttpRequest("get", $this->api."deleteMessage", $args);
+	}
+
 
 }//class end
 
